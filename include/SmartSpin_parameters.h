@@ -55,16 +55,18 @@ class Measurement {
 
 class RuntimeParameters {
  private:
-  double targetIncline  = 0.0;
-  double currentIncline = 0.0;
+  double targetIncline = 0.0;
   float simulatedSpeed = 0.0;
   uint8_t FTMSMode     = 0x00;
   int shifterPosition  = 0;
-  int32_t minStep          = -DEFAULT_STEPPER_TRAVEL;
-  int32_t maxStep          = DEFAULT_STEPPER_TRAVEL;
+  bool homed           = false;
+  int32_t minStep      = -DEFAULT_STEPPER_TRAVEL;
+  int32_t maxStep      = DEFAULT_STEPPER_TRAVEL;
   int minResistance    = -DEFAULT_RESISTANCE_RANGE;
   int maxResistance    = DEFAULT_RESISTANCE_RANGE;
   bool simTargetWatts  = false;
+  int32_t totalTravel = INT32_MIN; 
+  int16_t calculatedTotalTravel = INT16_MIN; 
 
  public:
   Measurement watts;
@@ -77,9 +79,6 @@ class RuntimeParameters {
   void setTargetIncline(float inc) { targetIncline = inc; }
   float getTargetIncline() { return targetIncline; }
 
-  void setCurrentIncline(float inc) { currentIncline = inc; }
-  float getCurrentIncline() { return currentIncline; }
-
   void setSimulatedSpeed(float spd) { simulatedSpeed = spd; }
   float getSimulatedSpeed() { return simulatedSpeed; }
 
@@ -88,6 +87,9 @@ class RuntimeParameters {
 
   void setShifterPosition(int sp) { shifterPosition = sp; }
   int getShifterPosition() { return shifterPosition; }
+
+  void setHomed(int hmd) { homed = hmd; }
+  int getHomed() { return homed; }
 
   void setMinStep(int ms) { minStep = ms; }
   int getMinStep() { return minStep; }
@@ -103,6 +105,12 @@ class RuntimeParameters {
 
   void setMaxResistance(int max) { maxResistance = max; }
   int getMaxResistance() { return maxResistance; }
+
+  void setTotalTravel(int32_t tT) { totalTravel = tT; }
+  int32_t getTotalTravel() { return totalTravel; }
+
+  void setCalculatedTotalTravel(int16_t calctT) { calculatedTotalTravel = calctT; }
+  int16_t getCalculatedTotalTravel() { return calculatedTotalTravel; }
 
   String returnJSON();
 };
@@ -124,7 +132,9 @@ class userParameters {
   bool stepperDir;
   bool shifterDir;
   bool udpLogEnabled = false;
- 
+  int32_t hMin = INT32_MIN;
+  int32_t hMax = INT32_MIN;
+
   bool FTMSControlPointWrite = false;
   String ssid;
   String password;
@@ -199,6 +209,12 @@ class userParameters {
 
   void setFoundDevices(String fdv) { foundDevices = fdv; }
   const char* getFoundDevices() { return foundDevices.c_str(); }
+
+  void setHMin(int32_t min) { hMin = min; }
+  int32_t getHMin() { return hMin; }
+
+  void setHMax(int32_t max) { hMax = max; }
+  int32_t getHMax() { return hMax; }
 
   void setDefaults();
   String returnJSON();
